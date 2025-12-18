@@ -1,0 +1,1783 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>家庭积分管理系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(90deg, #4b6cb7 0%, #182848 100%);
+            color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .app-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.12);
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card-title i {
+            margin-right: 10px;
+            color: #4b6cb7;
+        }
+        
+        /* 积分显示样式 */
+        .points-display {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+        
+        .child-points {
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            width: 48%;
+            background: #f8f9fa;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .child-points h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        .points-value {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: #4b6cb7;
+        }
+        
+        .child1 {
+            border-top: 5px solid #ff7e5f;
+        }
+        
+        .child2 {
+            border-top: 5px solid #4b6cb7;
+        }
+        
+        /* 事项列表样式 */
+        .task-list {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+        
+        .task-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #4b6cb7;
+        }
+        
+        .task-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .task-name {
+            font-weight: 600;
+            margin-right: 10px;
+        }
+        
+        .task-points {
+            background: #e3f2fd;
+            color: #4b6cb7;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .task-actions button {
+            background: #4b6cb7;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 6px 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+        }
+        
+        .task-actions button:hover {
+            background: #3a5795;
+        }
+        
+        /* 表单样式 */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .btn {
+            background: linear-gradient(90deg, #4b6cb7 0%, #182848 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn i {
+            margin-right: 8px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-sm {
+            padding: 8px 15px;
+            font-size: 0.9rem;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(90deg, #ff7e5f 0%, #feb47b 100%);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(90deg, #f09819 0%, #ff512f 100%);
+        }
+        
+        /* 日历样式 */
+        .calendar-container {
+            margin-top: 20px;
+        }
+        
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .calendar-header h3 {
+            font-size: 1.3rem;
+            color: #2c3e50;
+        }
+        
+        .calendar-nav button {
+            background: #f0f0f0;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 12px;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+        
+        .calendar {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .calendar th {
+            background: #f8f9fa;
+            padding: 10px;
+            text-align: center;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .calendar td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #eee;
+            height: 80px;
+            vertical-align: top;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .calendar td:hover {
+            background: #f5f7ff;
+        }
+        
+        .calendar .today {
+            background: #e3f2fd;
+            font-weight: bold;
+        }
+        
+        .calendar .selected {
+            background: #d4e6ff;
+            box-shadow: inset 0 0 0 2px #4b6cb7;
+        }
+        
+        .day-number {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .day-points {
+            font-size: 0.75rem;
+            line-height: 1.3;
+        }
+        
+        .child1-points {
+            color: #ff7e5f;
+            font-weight: 600;
+        }
+        
+        .child2-points {
+            color: #4b6cb7;
+            font-weight: 600;
+        }
+        
+        .total-points {
+            color: #333;
+            font-weight: 600;
+            margin-top: 2px;
+            font-size: 0.8rem;
+        }
+        
+        /* 日期详情面板 */
+        .date-detail {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .date-detail.active {
+            display: block;
+        }
+        
+        .date-detail h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .date-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        .date-stat {
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            background: white;
+            width: 32%;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .date-stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .date-stat-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        
+        .date-stat-child1 .date-stat-value {
+            color: #ff7e5f;
+        }
+        
+        .date-stat-child2 .date-stat-value {
+            color: #4b6cb7;
+        }
+        
+        .date-stat-total .date-stat-value {
+            color: #2c3e50;
+        }
+        
+        .date-history {
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        
+        /* 积分商城样式 */
+        .shop-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .shop-item {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            border: 2px solid #f0f0f0;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .shop-item:hover {
+            border-color: #4b6cb7;
+        }
+        
+        .item-img {
+            width: 80px;
+            height: 80px;
+            background: #f8f9fa;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #4b6cb7;
+        }
+        
+        .item-name {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+        
+        .item-cost {
+            color: #ff7e5f;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+        
+        .item-actions {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+        }
+        
+        .delete-item-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 126, 95, 0.1);
+            color: #ff7e5f;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .delete-item-btn:hover {
+            background: #ff7e5f;
+            color: white;
+        }
+        
+        /* 控制按钮区域 */
+        .control-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .points-display {
+                flex-direction: column;
+            }
+            
+            .child-points {
+                width: 100%;
+                margin-bottom: 15px;
+            }
+            
+            .shop-items {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+            
+            .calendar td {
+                height: 70px;
+                padding: 5px;
+            }
+            
+            .day-points {
+                font-size: 0.65rem;
+            }
+            
+            .control-buttons {
+                flex-direction: column;
+            }
+            
+            .date-stats {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .date-stat {
+                width: 100%;
+            }
+        }
+        
+        /* 历史记录样式 */
+        .history-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+        
+        .history-item {
+            padding: 8px 10px;
+            border-bottom: 1px solid #eee;
+            font-size: 0.9rem;
+        }
+        
+        .history-date {
+            color: #666;
+            font-size: 0.85rem;
+        }
+        
+        /* 标签切换 */
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            color: #4b6cb7;
+            border-bottom: 3px solid #4b6cb7;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        /* 兑换记录样式 */
+        .exchange-record {
+            background: #f9f9f9;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .exchange-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 8px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #ff7e5f;
+        }
+        
+        .exchange-info {
+            flex: 1;
+        }
+        
+        .exchange-child {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .exchange-item-name {
+            color: #4b6cb7;
+            font-weight: 600;
+        }
+        
+        .exchange-cost {
+            color: #ff7e5f;
+            font-weight: bold;
+        }
+        
+        .exchange-date {
+            color: #888;
+            font-size: 0.85rem;
+        }
+        
+        /* 初始化按钮 */
+        .init-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        
+        .init-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        /* 模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal h3 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        /* 无数据提示 */
+        .no-data {
+            text-align: center;
+            color: #888;
+            padding: 20px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-star"></i> 家庭积分管理系统</h1>
+            <p>培养孩子好习惯，积分兑换奖励，让成长更有趣！</p>
+            <button class="init-btn" id="open-init-modal">
+                <i class="fas fa-redo"></i> 初始化系统
+            </button>
+        </header>
+        
+        <div class="points-display">
+            <div class="child-points child1">
+                <h3><i class="fas fa-child"></i> 大宝积分</h3>
+                <div class="points-value" id="child1-points">120</div>
+                <p>今日已获得：<span id="child1-today-points">0</span>积分</p>
+            </div>
+            <div class="child-points child2">
+                <h3><i class="fas fa-child"></i> 二宝积分</h3>
+                <div class="points-value" id="child2-points">85</div>
+                <p>今日已获得：<span id="child2-today-points">0</span>积分</p>
+            </div>
+        </div>
+        
+        <div class="app-container">
+            <div class="card">
+                <h2 class="card-title"><i class="fas fa-tasks"></i> 每日任务管理</h2>
+                <p style="margin-bottom: 15px; color: #666; font-size: 0.95rem;">
+                    <i class="fas fa-info-circle"></i> 任务每日自动重置，新的一天重新开始
+                </p>
+                
+                <div class="tabs">
+                    <div class="tab active" data-target="child1-tasks">大宝的任务</div>
+                    <div class="tab" data-target="child2-tasks">二宝的任务</div>
+                </div>
+                
+                <div class="tab-content active" id="child1-tasks">
+                    <ul class="task-list" id="child1-task-list">
+                        <!-- 任务将通过JS动态添加 -->
+                    </ul>
+                    
+                    <div class="form-group">
+                        <label for="child1-task-name">新增任务：</label>
+                        <input type="text" id="child1-task-name" class="form-control" placeholder="输入任务名称，如：刷牙">
+                    </div>
+                    <div class="form-group">
+                        <label for="child1-task-points">积分值：</label>
+                        <input type="number" id="child1-task-points" class="form-control" placeholder="输入积分值" min="1" max="100" value="5">
+                    </div>
+                    <button class="btn" id="add-child1-task">
+                        <i class="fas fa-plus"></i> 添加任务
+                    </button>
+                </div>
+                
+                <div class="tab-content" id="child2-tasks">
+                    <ul class="task-list" id="child2-task-list">
+                        <!-- 任务将通过JS动态添加 -->
+                    </ul>
+                    
+                    <div class="form-group">
+                        <label for="child2-task-name">新增任务：</label>
+                        <input type="text" id="child2-task-name" class="form-control" placeholder="输入任务名称，如：刷牙">
+                    </div>
+                    <div class="form-group">
+                        <label for="child2-task-points">积分值：</label>
+                        <input type="number" id="child2-task-points" class="form-control" placeholder="输入积分值" min="1" max="100" value="5">
+                    </div>
+                    <button class="btn" id="add-child2-task">
+                        <i class="fas fa-plus"></i> 添加任务
+                    </button>
+                </div>
+                
+                <div class="control-buttons">
+                    <button class="btn btn-warning" id="reset-today-tasks">
+                        <i class="fas fa-sync-alt"></i> 手动重置今日任务
+                    </button>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2 class="card-title"><i class="fas fa-calendar-alt"></i> 积分日历</h2>
+                
+                <div class="calendar-container">
+                    <div class="calendar-header">
+                        <h3 id="current-month">2023年11月</h3>
+                        <div class="calendar-nav">
+                            <button id="prev-month"><i class="fas fa-chevron-left"></i></button>
+                            <button id="today-month">今天</button>
+                            <button id="next-month"><i class="fas fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+                    
+                    <table class="calendar" id="calendar">
+                        <thead>
+                            <tr>
+                                <th>日</th>
+                                <th>一</th>
+                                <th>二</th>
+                                <th>三</th>
+                                <th>四</th>
+                                <th>五</th>
+                                <th>六</th>
+                            </tr>
+                        </thead>
+                        <tbody id="calendar-body">
+                            <!-- 日历将通过JS动态生成 -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="date-detail" id="date-detail">
+                    <h4 id="detail-date">2023年11月15日 详情</h4>
+                    <div class="date-stats">
+                        <div class="date-stat date-stat-child1">
+                            <div class="date-stat-label">大宝积分</div>
+                            <div class="date-stat-value" id="detail-child1-points">0</div>
+                        </div>
+                        <div class="date-stat date-stat-child2">
+                            <div class="date-stat-label">二宝积分</div>
+                            <div class="date-stat-value" id="detail-child2-points">0</div>
+                        </div>
+                        <div class="date-stat date-stat-total">
+                            <div class="date-stat-label">总积分</div>
+                            <div class="date-stat-value" id="detail-total-points">0</div>
+                        </div>
+                    </div>
+                    <h4>当日记录</h4>
+                    <div class="date-history" id="date-history">
+                        <!-- 当日记录将通过JS动态添加 -->
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <h3><i class="fas fa-history"></i> 今日记录</h3>
+                    <div class="history-list" id="today-history">
+                        <!-- 今日记录将通过JS动态添加 -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2 class="card-title"><i class="fas fa-store"></i> 积分商城</h2>
+                <p style="margin-bottom: 15px;">使用积分兑换孩子们喜欢的奖励物品</p>
+                
+                <div class="shop-items" id="shop-items">
+                    <!-- 商品将通过JS动态添加 -->
+                </div>
+                
+                <div style="margin-top: 25px;">
+                    <h3><i class="fas fa-gift"></i> 添加新商品</h3>
+                    <div class="form-group">
+                        <label for="new-item-name">商品名称：</label>
+                        <input type="text" id="new-item-name" class="form-control" placeholder="输入商品名称">
+                    </div>
+                    <div class="form-group">
+                        <label for="new-item-cost">所需积分：</label>
+                        <input type="number" id="new-item-cost" class="form-control" placeholder="输入所需积分" min="1" max="500" value="20">
+                    </div>
+                    <button class="btn" id="add-shop-item">
+                        <i class="fas fa-plus"></i> 添加商品
+                    </button>
+                </div>
+                
+                <div class="exchange-record">
+                    <h3><i class="fas fa-exchange-alt"></i> 积分兑换记录</h3>
+                    <div id="exchange-list">
+                        <!-- 兑换记录将通过JS动态添加 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>家庭积分管理系统 &copy; 2023 | 设计：爱心爸爸 | 提示：数据保存在浏览器本地，清除缓存会丢失数据</p>
+        </footer>
+    </div>
+    
+    <!-- 初始化确认模态框 -->
+    <div class="modal" id="init-modal">
+        <div class="modal-content">
+            <h3><i class="fas fa-exclamation-triangle"></i> 初始化确认</h3>
+            <p>初始化操作将执行以下操作：</p>
+            <ul style="margin: 15px 0 15px 20px; color: #666;">
+                <li>将所有积分重置为0</li>
+                <li>清空积分日历记录</li>
+                <li>清空兑换记录</li>
+                <li>保留任务和商品列表</li>
+            </ul>
+            <p style="color: #ff7e5f; font-weight: bold;">此操作不可撤销，请谨慎执行！</p>
+            <div class="modal-buttons">
+                <button class="btn btn-danger" id="confirm-init">确认初始化</button>
+                <button class="btn" id="cancel-init">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 初始数据
+        let tasks = {
+            child1: [
+                { id: 1, name: "阅读30分钟", points: 10, completed: false },
+                { id: 2, name: "按时完成作业", points: 8, completed: true },
+                { id: 3, name: "自己洗漱", points: 5, completed: false },
+                { id: 4, name: "整理书包", points: 5, completed: true }
+            ],
+            child2: [
+                { id: 1, name: "阅读20分钟", points: 8, completed: false },
+                { id: 2, name: "练习写字", points: 6, completed: true },
+                { id: 3, name: "自己穿衣", points: 5, completed: false },
+                { id: 4, name: "帮忙摆碗筷", points: 4, completed: true }
+            ]
+        };
+        
+        let shopItems = [
+            { id: 1, name: "游乐场游玩", cost: 50, icon: "fas fa-ticket-alt" },
+            { id: 2, name: "新玩具", cost: 100, icon: "fas fa-gamepad" },
+            { id: 3, name: "冰淇淋", cost: 15, icon: "fas fa-ice-cream" },
+            { id: 4, name: "看动画片30分钟", cost: 20, icon: "fas fa-tv" },
+            { id: 5, name: "周末郊游", cost: 80, icon: "fas fa-car" },
+            { id: 6, name: "新绘本", cost: 30, icon: "fas fa-book" }
+        ];
+        
+        let points = {
+            child1: 120,
+            child2: 85
+        };
+        
+        let todayPoints = {
+            child1: 0,
+            child2: 0
+        };
+        
+        // 日历数据 - 按日期存储两个孩子各自的积分
+        let calendarData = {
+            "2023-11-15": { child1: 18, child2: 10, total: 28, history: [
+                { child: "child1", action: "完成作业", points: 8, time: "18:30" },
+                { child: "child2", action: "帮忙摆碗筷", points: 4, time: "18:00" },
+                { child: "child1", action: "阅读30分钟", points: 10, time: "20:00" }
+            ]},
+            "2023-11-14": { child1: 15, child2: 6, total: 21, history: [
+                { child: "child1", action: "整理书包", points: 5, time: "17:30" },
+                { child: "child2", action: "练习写字", points: 6, time: "19:00" },
+                { child: "child1", action: "按时完成作业", points: 10, time: "20:30" }
+            ]},
+            "2023-11-13": { child1: 5, child2: 5, total: 10, history: [
+                { child: "child1", action: "自己洗漱", points: 5, time: "20:15" },
+                { child: "child2", action: "自己穿衣", points: 5, time: "07:30" }
+            ]}
+        };
+        
+        // 历史记录数据
+        let history = [
+            { child: "child1", action: "完成作业", points: 8, date: getTodayDate() + " 18:30" },
+            { child: "child2", action: "帮忙摆碗筷", points: 4, date: getTodayDate() + " 18:00" }
+        ];
+        
+        // 兑换记录数据
+        let exchangeRecords = [
+            { child: "child1", item: "新玩具", cost: 100, date: "2023-11-14 16:30" },
+            { child: "child2", item: "冰淇淋", cost: 15, date: "2023-11-13 15:20" },
+            { child: "child1", item: "游乐场游玩", cost: 50, date: "2023-11-10 19:10" }
+        ];
+        
+        // 日历相关
+        let currentDate = new Date();
+        let currentMonth = currentDate.getMonth();
+        let currentYear = currentDate.getFullYear();
+        let selectedDate = getTodayDate(); // 当前选中的日期
+        
+        // 每日任务重置日期
+        let lastResetDate = getTodayDate();
+        
+        // DOM元素
+        const child1PointsEl = document.getElementById('child1-points');
+        const child2PointsEl = document.getElementById('child2-points');
+        const child1TodayPointsEl = document.getElementById('child1-today-points');
+        const child2TodayPointsEl = document.getElementById('child2-today-points');
+        const child1TaskListEl = document.getElementById('child1-task-list');
+        const child2TaskListEl = document.getElementById('child2-task-list');
+        const shopItemsEl = document.getElementById('shop-items');
+        const calendarBodyEl = document.getElementById('calendar-body');
+        const currentMonthEl = document.getElementById('current-month');
+        const todayHistoryEl = document.getElementById('today-history');
+        const exchangeListEl = document.getElementById('exchange-list');
+        const initModalEl = document.getElementById('init-modal');
+        const dateDetailEl = document.getElementById('date-detail');
+        const detailDateEl = document.getElementById('detail-date');
+        const detailChild1PointsEl = document.getElementById('detail-child1-points');
+        const detailChild2PointsEl = document.getElementById('detail-child2-points');
+        const detailTotalPointsEl = document.getElementById('detail-total-points');
+        const dateHistoryEl = document.getElementById('date-history');
+        
+        // 工具函数：获取今天的日期字符串 (YYYY-MM-DD)
+        function getTodayDate() {
+            const now = new Date();
+            return now.toISOString().split('T')[0];
+        }
+        
+        // 工具函数：获取当前时间字符串 (HH:MM)
+        function getCurrentTime() {
+            const now = new Date();
+            return now.toTimeString().split(' ')[0].substring(0, 5);
+        }
+        
+        // 工具函数：格式化日期显示 (YYYY年MM月DD日)
+        function formatDateDisplay(dateStr) {
+            const date = new Date(dateStr);
+            return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
+        }
+        
+        // 检查是否需要重置每日任务
+        function checkDailyReset() {
+            const today = getTodayDate();
+            
+            // 如果上次重置日期不是今天，则重置任务
+            if (lastResetDate !== today) {
+                resetDailyTasks();
+                lastResetDate = today;
+                saveData();
+                showNotification("新的一天开始了！所有任务已重置。");
+            }
+        }
+        
+        // 重置每日任务
+        function resetDailyTasks() {
+            // 重置所有任务的完成状态
+            for (const child in tasks) {
+                tasks[child].forEach(task => {
+                    task.completed = false;
+                });
+            }
+            
+            // 重置今日积分
+            todayPoints.child1 = 0;
+            todayPoints.child2 = 0;
+            
+            // 重新渲染任务列表
+            renderTaskList('child1');
+            renderTaskList('child2');
+            
+            // 更新今日积分显示
+            updateTodayPointsDisplay();
+            
+            // 清空今日历史记录
+            renderTodayHistory();
+        }
+        
+        // 初始化函数
+        function init() {
+            // 从本地存储加载数据
+            loadData();
+            
+            // 检查是否需要重置每日任务
+            checkDailyReset();
+            
+            // 渲染任务列表
+            renderTaskList('child1');
+            renderTaskList('child2');
+            
+            // 渲染积分商城
+            renderShopItems();
+            
+            // 渲染日历
+            renderCalendar(currentMonth, currentYear);
+            
+            // 渲染今日记录
+            renderTodayHistory();
+            
+            // 渲染兑换记录
+            renderExchangeRecords();
+            
+            // 更新积分显示
+            updatePointsDisplay();
+            updateTodayPointsDisplay();
+            
+            // 绑定事件
+            bindEvents();
+            
+            // 设置初始标签页
+            setupTabs();
+            
+            // 默认显示今天的详情
+            showDateDetail(selectedDate);
+        }
+        
+        // 从本地存储加载数据
+        function loadData() {
+            const savedTasks = localStorage.getItem('familyPointsTasks');
+            const savedShopItems = localStorage.getItem('familyPointsShopItems');
+            const savedPoints = localStorage.getItem('familyPoints');
+            const savedTodayPoints = localStorage.getItem('familyPointsTodayPoints');
+            const savedHistory = localStorage.getItem('familyPointsHistory');
+            const savedExchangeRecords = localStorage.getItem('familyPointsExchangeRecords');
+            const savedLastResetDate = localStorage.getItem('familyPointsLastResetDate');
+            const savedCalendarData = localStorage.getItem('familyPointsCalendarData');
+            
+            if (savedTasks) tasks = JSON.parse(savedTasks);
+            if (savedShopItems) shopItems = JSON.parse(savedShopItems);
+            if (savedPoints) points = JSON.parse(savedPoints);
+            if (savedTodayPoints) todayPoints = JSON.parse(savedTodayPoints);
+            if (savedHistory) history = JSON.parse(savedHistory);
+            if (savedExchangeRecords) exchangeRecords = JSON.parse(savedExchangeRecords);
+            if (savedLastResetDate) lastResetDate = savedLastResetDate;
+            if (savedCalendarData) calendarData = JSON.parse(savedCalendarData);
+        }
+        
+        // 保存数据到本地存储
+        function saveData() {
+            localStorage.setItem('familyPointsTasks', JSON.stringify(tasks));
+            localStorage.setItem('familyPointsShopItems', JSON.stringify(shopItems));
+            localStorage.setItem('familyPoints', JSON.stringify(points));
+            localStorage.setItem('familyPointsTodayPoints', JSON.stringify(todayPoints));
+            localStorage.setItem('familyPointsHistory', JSON.stringify(history));
+            localStorage.setItem('familyPointsExchangeRecords', JSON.stringify(exchangeRecords));
+            localStorage.setItem('familyPointsLastResetDate', lastResetDate);
+            localStorage.setItem('familyPointsCalendarData', JSON.stringify(calendarData));
+        }
+        
+        // 渲染任务列表
+        function renderTaskList(child) {
+            const taskListEl = child === 'child1' ? child1TaskListEl : child2TaskListEl;
+            const childTasks = tasks[child];
+            
+            taskListEl.innerHTML = '';
+            
+            if (childTasks.length === 0) {
+                taskListEl.innerHTML = '<div class="no-data">还没有添加任何任务</div>';
+                return;
+            }
+            
+            childTasks.forEach(task => {
+                const taskEl = document.createElement('li');
+                taskEl.className = 'task-item';
+                taskEl.innerHTML = `
+                    <div class="task-info">
+                        <span class="task-name">${task.name}</span>
+                        <span class="task-points">${task.points} 积分</span>
+                    </div>
+                    <div class="task-actions">
+                        <button class="complete-task" data-child="${child}" data-id="${task.id}" ${task.completed ? 'disabled' : ''}>
+                            ${task.completed ? '<i class="fas fa-check"></i> 已完成' : '<i class="fas fa-check-circle"></i> 完成任务'}
+                        </button>
+                        <button class="delete-task btn-sm" data-child="${child}" data-id="${task.id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                taskListEl.appendChild(taskEl);
+            });
+        }
+        
+        // 渲染积分商城
+        function renderShopItems() {
+            shopItemsEl.innerHTML = '';
+            
+            if (shopItems.length === 0) {
+                shopItemsEl.innerHTML = '<div class="no-data" style="grid-column: 1/-1;">还没有添加任何商品</div>';
+                return;
+            }
+            
+            shopItems.forEach(item => {
+                const itemEl = document.createElement('div');
+                itemEl.className = 'shop-item';
+                itemEl.innerHTML = `
+                    <button class="delete-item-btn" data-id="${item.id}">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <div class="item-img">
+                        <i class="${item.icon}"></i>
+                    </div>
+                    <div class="item-name">${item.name}</div>
+                    <div class="item-cost">${item.cost} 积分</div>
+                    <div class="item-actions">
+                        <button class="btn btn-sm buy-item" data-id="${item.id}" data-child="child1">
+                            大宝兑换
+                        </button>
+                        <button class="btn btn-sm buy-item" data-id="${item.id}" data-child="child2" style="margin-left: 5px;">
+                            二宝兑换
+                        </button>
+                    </div>
+                `;
+                shopItemsEl.appendChild(itemEl);
+            });
+        }
+        
+        // 渲染日历
+        function renderCalendar(month, year) {
+            calendarBodyEl.innerHTML = '';
+            currentMonthEl.textContent = `${year}年${month + 1}月`;
+            
+            // 获取当月的第一天和最后一天
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const daysInMonth = lastDay.getDate();
+            
+            // 获取第一天是星期几 (0 = 星期日, 1 = 星期一, ...)
+            const firstDayOfWeek = firstDay.getDay();
+            
+            // 创建日期数组
+            let date = 1;
+            let rows = '';
+            
+            for (let i = 0; i < 6; i++) {
+                rows += '<tr>';
+                
+                for (let j = 0; j < 7; j++) {
+                    if (i === 0 && j < firstDayOfWeek) {
+                        // 上个月的日期
+                        rows += '<td></td>';
+                    } else if (date > daysInMonth) {
+                        // 下个月的日期
+                        rows += '<td></td>';
+                    } else {
+                        // 当月日期
+                        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}`;
+                        const isToday = dateStr === getTodayDate();
+                        const isSelected = dateStr === selectedDate;
+                        
+                        // 获取该日期的积分数据
+                        const dateData = calendarData[dateStr] || { child1: 0, child2: 0, total: 0, history: [] };
+                        
+                        // 计算当天积分
+                        const child1Points = dateData.child1 || 0;
+                        const child2Points = dateData.child2 || 0;
+                        const totalPoints = dateData.total || 0;
+                        
+                        rows += `<td class="${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''}" 
+                                 data-date="${dateStr}">
+                            <div class="day-number">${date}</div>
+                            <div class="day-points">
+                                ${child1Points > 0 ? `<div class="child1-points">大宝: ${child1Points}</div>` : ''}
+                                ${child2Points > 0 ? `<div class="child2-points">二宝: ${child2Points}</div>` : ''}
+                                ${totalPoints > 0 ? `<div class="total-points">总计: ${totalPoints}</div>` : ''}
+                            </div>
+                        </td>`;
+                        date++;
+                    }
+                }
+                
+                rows += '</tr>';
+                
+                if (date > daysInMonth) {
+                    break;
+                }
+            }
+            
+            calendarBodyEl.innerHTML = rows;
+        }
+        
+        // 显示日期详情
+        function showDateDetail(dateStr) {
+            // 更新选中日期
+            selectedDate = dateStr;
+            
+            // 更新详情面板标题
+            detailDateEl.textContent = `${formatDateDisplay(dateStr)} 详情`;
+            
+            // 获取该日期的数据
+            const dateData = calendarData[dateStr] || { child1: 0, child2: 0, total: 0, history: [] };
+            
+            // 更新积分显示
+            detailChild1PointsEl.textContent = dateData.child1 || 0;
+            detailChild2PointsEl.textContent = dateData.child2 || 0;
+            detailTotalPointsEl.textContent = dateData.total || 0;
+            
+            // 更新历史记录
+            dateHistoryEl.innerHTML = '';
+            
+            if (dateData.history && dateData.history.length > 0) {
+                dateData.history.forEach(record => {
+                    const historyEl = document.createElement('div');
+                    historyEl.className = 'history-item';
+                    const childName = record.child === 'child1' ? '大宝' : '二宝';
+                    historyEl.innerHTML = `
+                        <div><strong>${childName}</strong> ${record.action} <span style="color: #4b6cb7; font-weight: bold;">+${record.points}积分</span></div>
+                        <div class="history-date">${record.time}</div>
+                    `;
+                    dateHistoryEl.appendChild(historyEl);
+                });
+            } else {
+                dateHistoryEl.innerHTML = '<div class="no-data">这一天没有积分记录</div>';
+            }
+            
+            // 显示详情面板
+            dateDetailEl.classList.add('active');
+            
+            // 重新渲染日历以更新选中状态
+            renderCalendar(currentMonth, currentYear);
+        }
+        
+        // 渲染今日记录
+        function renderTodayHistory() {
+            todayHistoryEl.innerHTML = '';
+            
+            const today = getTodayDate();
+            const todayHistory = history.filter(record => record.date.startsWith(today));
+            
+            if (todayHistory.length === 0) {
+                todayHistoryEl.innerHTML = '<div class="no-data">今日还没有任何任务记录</div>';
+                return;
+            }
+            
+            todayHistory.forEach(record => {
+                const historyEl = document.createElement('div');
+                historyEl.className = 'history-item';
+                const childName = record.child === 'child1' ? '大宝' : '二宝';
+                const time = record.date.split(' ')[1];
+                historyEl.innerHTML = `
+                    <div><strong>${childName}</strong> ${record.action} <span style="color: #4b6cb7; font-weight: bold;">+${record.points}积分</span></div>
+                    <div class="history-date">${time}</div>
+                `;
+                todayHistoryEl.appendChild(historyEl);
+            });
+        }
+        
+        // 渲染兑换记录
+        function renderExchangeRecords() {
+            exchangeListEl.innerHTML = '';
+            
+            if (exchangeRecords.length === 0) {
+                exchangeListEl.innerHTML = '<div class="no-data">暂无兑换记录</div>';
+                return;
+            }
+            
+            // 按日期降序排序
+            const sortedRecords = [...exchangeRecords].sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            sortedRecords.forEach(record => {
+                const exchangeEl = document.createElement('div');
+                exchangeEl.className = 'exchange-item';
+                const childName = record.child === 'child1' ? '大宝' : '二宝';
+                const date = record.date.split(' ')[0];
+                const time = record.date.split(' ')[1];
+                exchangeEl.innerHTML = `
+                    <div class="exchange-info">
+                        <div>
+                            <span class="exchange-child">${childName}</span> 兑换了 
+                            <span class="exchange-item-name">${record.item}</span>
+                        </div>
+                        <div class="exchange-date">${date} ${time}</div>
+                    </div>
+                    <div class="exchange-cost">-${record.cost}积分</div>
+                `;
+                exchangeListEl.appendChild(exchangeEl);
+            });
+        }
+        
+        // 更新积分显示
+        function updatePointsDisplay() {
+            child1PointsEl.textContent = points.child1;
+            child2PointsEl.textContent = points.child2;
+        }
+        
+        // 更新今日积分显示
+        function updateTodayPointsDisplay() {
+            child1TodayPointsEl.textContent = todayPoints.child1;
+            child2TodayPointsEl.textContent = todayPoints.child2;
+        }
+        
+        // 设置标签页
+        function setupTabs() {
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const targetId = tab.getAttribute('data-target');
+                    
+                    // 移除所有活动的标签和内容
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    
+                    // 激活当前标签和内容
+                    tab.classList.add('active');
+                    document.getElementById(targetId).classList.add('active');
+                });
+            });
+        }
+        
+        // 绑定事件
+        function bindEvents() {
+            // 添加任务按钮
+            document.getElementById('add-child1-task').addEventListener('click', () => addTask('child1'));
+            document.getElementById('add-child2-task').addEventListener('click', () => addTask('child2'));
+            
+            // 完成任务按钮 (使用事件委托)
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.complete-task')) {
+                    const button = e.target.closest('.complete-task');
+                    const child = button.getAttribute('data-child');
+                    const taskId = parseInt(button.getAttribute('data-id'));
+                    completeTask(child, taskId);
+                }
+                
+                // 删除任务按钮
+                if (e.target.closest('.delete-task')) {
+                    const button = e.target.closest('.delete-task');
+                    const child = button.getAttribute('data-child');
+                    const taskId = parseInt(button.getAttribute('data-id'));
+                    deleteTask(child, taskId);
+                }
+                
+                // 购买商品按钮
+                if (e.target.closest('.buy-item')) {
+                    const button = e.target.closest('.buy-item');
+                    const itemId = parseInt(button.getAttribute('data-id'));
+                    const child = button.getAttribute('data-child');
+                    buyItem(itemId, child);
+                }
+                
+                // 删除商品按钮
+                if (e.target.closest('.delete-item-btn')) {
+                    const button = e.target.closest('.delete-item-btn');
+                    const itemId = parseInt(button.getAttribute('data-id'));
+                    deleteShopItem(itemId);
+                }
+                
+                // 日历日期点击事件
+                if (e.target.closest('td[data-date]')) {
+                    const td = e.target.closest('td[data-date]');
+                    const dateStr = td.getAttribute('data-date');
+                    showDateDetail(dateStr);
+                }
+            });
+            
+            // 日历导航按钮
+            document.getElementById('prev-month').addEventListener('click', () => {
+                currentMonth--;
+                if (currentMonth < 0) {
+                    currentMonth = 11;
+                    currentYear--;
+                }
+                renderCalendar(currentMonth, currentYear);
+            });
+            
+            document.getElementById('next-month').addEventListener('click', () => {
+                currentMonth++;
+                if (currentMonth > 11) {
+                    currentMonth = 0;
+                    currentYear++;
+                }
+                renderCalendar(currentMonth, currentYear);
+            });
+            
+            // 今天按钮
+            document.getElementById('today-month').addEventListener('click', () => {
+                currentDate = new Date();
+                currentMonth = currentDate.getMonth();
+                currentYear = currentDate.getFullYear();
+                selectedDate = getTodayDate();
+                renderCalendar(currentMonth, currentYear);
+                showDateDetail(selectedDate);
+            });
+            
+            // 添加商品按钮
+            document.getElementById('add-shop-item').addEventListener('click', addShopItem);
+            
+            // 手动重置今日任务按钮
+            document.getElementById('reset-today-tasks').addEventListener('click', () => {
+                if (confirm('确定要重置今日任务吗？所有未完成的任务将重新开始。')) {
+                    resetDailyTasks();
+                    showNotification('今日任务已重置！');
+                }
+            });
+            
+            // 初始化系统按钮
+            document.getElementById('open-init-modal').addEventListener('click', () => {
+                initModalEl.style.display = 'flex';
+            });
+            
+            document.getElementById('cancel-init').addEventListener('click', () => {
+                initModalEl.style.display = 'none';
+            });
+            
+            document.getElementById('confirm-init').addEventListener('click', initializeSystem);
+            
+            // 点击模态框外部关闭
+            initModalEl.addEventListener('click', (e) => {
+                if (e.target === initModalEl) {
+                    initModalEl.style.display = 'none';
+                }
+            });
+            
+            // 回车键添加任务
+            document.getElementById('child1-task-name').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') addTask('child1');
+            });
+            document.getElementById('child2-task-name').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') addTask('child2');
+            });
+            
+            // 回车键添加商品
+            document.getElementById('new-item-name').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') addShopItem();
+            });
+        }
+        
+        // 添加任务
+        function addTask(child) {
+            const taskNameInput = document.getElementById(`${child}-task-name`);
+            const taskPointsInput = document.getElementById(`${child}-task-points`);
+            
+            const taskName = taskNameInput.value.trim();
+            const taskPoints = parseInt(taskPointsInput.value);
+            
+            if (!taskName || isNaN(taskPoints) ) {
+                alert('请输入有效的任务名称和积分值');
+                return;
+            }
+            
+            // 生成新ID
+            const newId = tasks[child].length > 0 ? Math.max(...tasks[child].map(t => t.id)) + 1 : 1;
+            
+            // 添加新任务
+            tasks[child].push({
+                id: newId,
+                name: taskName,
+                points: taskPoints,
+                completed: false
+            });
+            
+            // 重新渲染任务列表
+            renderTaskList(child);
+            
+            // 清空输入框
+            taskNameInput.value = '';
+            taskPointsInput.value = '5';
+            
+            // 保存数据
+            saveData();
+            
+            // 显示成功消息
+            showNotification(`已为${child === 'child1' ? '大宝' : '二宝'}添加任务：${taskName}`);
+        }
+        
+        // 完成任务
+        function completeTask(child, taskId) {
+            const task = tasks[child].find(t => t.id === taskId);
+            
+            if (!task || task.completed) return;
+            
+            // 标记为完成
+            task.completed = true;
+            
+            // 增加积分
+            points[child] += task.points;
+            todayPoints[child] += task.points;
+            
+            // 更新日历数据
+            const today = getTodayDate();
+            if (!calendarData[today]) {
+                calendarData[today] = { child1: 0, child2: 0, total: 0, history: [] };
+            }
+            
+            // 更新当日积分
+            calendarData[today][child] += task.points;
+            calendarData[today].total += task.points;
+            
+            // 添加历史记录
+            const historyRecord = {
+                child: child,
+                action: task.name,
+                points: task.points,
+                time: getCurrentTime()
+            };
+            
+            calendarData[today].history.push(historyRecord);
+            
+            // 添加到全局历史记录
+            history.unshift({
+                child: child,
+                action: task.name,
+                points: task.points,
+                date: `${today} ${getCurrentTime()}`
+            });
+            
+            // 重新渲染任务列表
+            renderTaskList(child);
+            
+            // 更新积分显示
+            updatePointsDisplay();
+            updateTodayPointsDisplay();
+            
+            // 更新今日记录
+            renderTodayHistory();
+            
+            // 如果选中的是今天，更新详情面板
+            if (selectedDate === today) {
+                showDateDetail(today);
+            }
+            
+            // 重新渲染日历
+            renderCalendar(currentMonth, currentYear);
+            
+            // 保存数据
+            saveData();
+            
+            // 显示成功消息
+            showNotification(`${child === 'child1' ? '大宝' : '二宝'}完成任务 "${task.name}"，获得${task.points}积分！`);
+        }
+        
+        // 删除任务
+        function deleteTask(child, taskId) {
+            if (!confirm('确定要删除这个任务吗？')) return;
+            
+            // 过滤掉要删除的任务
+            tasks[child] = tasks[child].filter(t => t.id !== taskId);
+            
+            // 重新渲染任务列表
+            renderTaskList(child);
+            
+            // 保存数据
+            saveData();
+            
+            // 显示成功消息
+            showNotification(`任务已删除`);
+        }
+        
+        // 删除商品
+        function deleteShopItem(itemId) {
+            if (!confirm('确定要删除这个商品吗？')) return;
+            
+            // 过滤掉要删除的商品
+            shopItems = shopItems.filter(i => i.id !== itemId);
+            
+            // 重新渲染商品列表
+            renderShopItems();
+            
+            // 保存数据
+            saveData();
+            
+            // 显示成功消息
+            showNotification(`商品已删除`);
+        }
+        
+        // 购买商品
+        function buyItem(itemId, child) {
+            const item = shopItems.find(i => i.id === itemId);
+            
+            if (!item) return;
+            
+            if (points[child] < item.cost) {
+                alert(`${child === 'child1' ? '大宝' : '二宝'}积分不足，无法兑换此商品！`);
+                return;
+            }
+            
+            if (!confirm(`确定要用${item.cost}积分兑换"${item.name}"给${child === 'child1' ? '大宝' : '二宝'}吗？`)) return;
+            
+            // 扣除积分
+            points[child] -= item.cost;
+            
+            // 添加兑换记录
+            exchangeRecords.unshift({
+                child: child,
+                item: item.name,
+                cost: item.cost,
+                date: `${getTodayDate()} ${getCurrentTime()}`
+            });
+            
+            // 更新积分显示
+            updatePointsDisplay();
+            
+            // 重新渲染兑换记录
+            renderExchangeRecords();
+            
+            // 保存数据
+            saveData();
+            
+            // 显示成功消息
+            showNotification(`${child === 'child1' ? '大宝' : '二宝'}成功兑换"${item.name}"，扣除${item.cost}积分！`);
+        }
+        
+        // 添加商品
+        function addShopItem() {
+            const itemNameInput = document.getElementById('new-item-name');
+            const itemCostInput = document.getElementById('new-item-cost');
+            
+            const itemName = itemNameInput.value.trim();
+            const itemCost = parseInt(itemCostInput.value);
+            
+            if (!itemName || isNaN(itemCost) || itemCost <= 0) {
+                alert('请输入有效的商品名称和积分值');
+                return;
+            }
+            
+            // 生成新ID
+            const newId = shopItems.length > 0 ? Math.max(...shopItems.map(i => i.id)) + 1 : 1;
+            
+            // 图标列表
+            const icons = [
+                'fas fa-gamepad', 'fas fa-book', 'fas fa-ticket-alt', 
+                'fas fa-ice-cream', 'fas fa-tv', 'fas fa-car',
+                'fas fa-bicycle', 'fas fa-puzzle-piece', 'fas fa-music',
+                'fas fa-film', 'fas fa-cookie-bite', 'fas fa-basketball-ball'
+            ];
+            
+            // 随机选择一个图标
+            const randomIcon = icons[Math.floor(Math.random() * icons.length)];
+            
+            // 添加新商品
+            shopItems.push({
+                id: newId,
+                name: itemName,
+                cost: itemCost,
+                icon: randomIcon
+            });
+            
+            // 重新渲染商品列表
+            renderShopItems();
+            
+            // 清空输入框
+            itemNameInput.value = '';
+            itemCostInput.value = '20';
+            
+            // 保存数据
+            saveData();
+            
+            // 显示成功消息
+            showNotification(`已添加新商品：${itemName}`);
+        }
+        
+        // 初始化系统
+        function initializeSystem() {
+            // 重置所有积分为0
+            points.child1 = 0;
+            points.child2 = 0;
+            
+            // 重置今日积分
+            todayPoints.child1 = 0;
+            todayPoints.child2 = 0;
+            
+            // 清空日历数据
+            calendarData = {};
+            
+            // 清空兑换记录
+            exchangeRecords = [];
+            
+            // 清空历史记录
+            history = [];
+            
+            // 重置任务完成状态
+            for (const child in tasks) {
+                tasks[child].forEach(task => {
+                    task.completed = false;
+                });
+            }
+            
+            // 重新渲染所有组件
+            updatePointsDisplay();
+            updateTodayPointsDisplay();
+            renderTaskList('child1');
+            renderTaskList('child2');
+            renderCalendar(currentMonth, currentYear);
+            renderTodayHistory();
+            renderExchangeRecords();
+            
+            // 隐藏日期详情面板
+            dateDetailEl.classList.remove('active');
+            
+            // 保存数据
+            saveData();
+            
+            // 关闭模态框
+            initModalEl.style.display = 'none';
+            
+            // 显示成功消息
+            showNotification('系统已成功初始化！所有积分和记录已重置。');
+        }
+        
+        // 显示通知
+        function showNotification(message) {
+            // 创建通知元素
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #4b6cb7;
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                z-index: 1000;
+                font-weight: 600;
+                transform: translateX(150%);
+                transition: transform 0.3s ease;
+            `;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            // 显示通知
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 10);
+            
+            // 3秒后隐藏并移除通知
+            setTimeout(() => {
+                notification.style.transform = 'translateX(150%)';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+        
+        // 初始化应用
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
